@@ -1,11 +1,12 @@
 #include "rand.h"
 
 
-struct xorshift32_state {
-  unsigned int a;
-};
-//static unsigned int x = 1 ;
-struct xorshift32_state state;
+// struct xorshift32_state {
+//   unsigned int a;
+// };
+ unsigned int a = 1 ;
+//struct xorshift32_state state;
+
 /* 
     Return a random integer between 0 and XV6_RAND_MAX inclusive. 
     NOTE: If xv6_rand is called before any calls to xv6_srand have been made, the same 
@@ -13,13 +14,13 @@ struct xorshift32_state state;
 */
 int xv6_rand (void){
 
-  unsigned int x = state.a;
+  unsigned int x = a;
 	x ^= x << 13;
 	x ^= x >> 17;
 	x ^= x << 5;
-  state.a = (x % XV6_RAND_MAX);
+  a = (x % XV6_RAND_MAX);
 	return (x % XV6_RAND_MAX);
-  //  usigned int t = 
+  
 }
 
 
@@ -31,5 +32,5 @@ int xv6_rand (void){
     If xv6_rand is called before any calls to xv6_srand have been made, the same sequence shall be generated as when xv6_srand is first called with a seed value of 1.  
 */
 void xv6_srand (unsigned int seed){
-  state.a = seed;
+  a = seed;
 }

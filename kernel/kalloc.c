@@ -2,12 +2,14 @@
 // memory for user processes, kernel stacks, page table pages,
 // and pipe buffers. Allocates 4096-byte pages.
 
+
 #include "types.h"
 #include "defs.h"
 #include "param.h"
 #include "mmu.h"
 #include "spinlock.h"
 #include "rand.h"
+
 
 int allocatedframes[512];
 int count = 0; // size of allocated
@@ -66,17 +68,44 @@ char*
 kalloc(void)
 {
   struct run *r;
+  struct run *p = 0;
   
   acquire(&kmem.lock);
   r = kmem.freelist;
+
+  int randomNum = xv6_rand();
+  int location = randomNum % freeListSize;
+  int counter = 0;
+   while(location != counter){ // find the one previous to location
+       p = r;
+       r = r->next;
+       counter ++;
+    }
+
+
   if(r){
-    //xv6_srand (1);
-    int randomNum = xv6_rand();
-    int location = randomNum / freeListSize;
-    allocatedframes[location] = (uint)r;
-    count ++;
-    kmem.freelist = r->next;
+   allocatedframes[count] = (uint)r;
   }
+
+  if(p == 0 ){
+    
+    r -> next = kmem.freelist;
+    count ++;
+    //delete the allocated from free list 
+    freeListSize --;
+   }else if(r ->next){
+    //allocatedframes[count] = (uint)r;
+    p -> next = p ->next ->next;
+    count ++;
+    //delete the allocated from free list 
+    freeListSize --;
+   }else{
+   // allocatedframes[count] = (uint)r;
+    p -> next = 0;
+    count ++;
+    //delete the allocated from free list 
+    freeListSize --;
+   }
   release(&kmem.lock);
   return (char*)r;
 }
