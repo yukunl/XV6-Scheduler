@@ -68,18 +68,19 @@ char*
 kalloc(void)
 {
   struct run *r;
-  struct run *p = 0;
-  
+  struct run *p;
+  p = 0;
   acquire(&kmem.lock);
   r = kmem.freelist;
 
   int randomNum = xv6_rand();
   int location = randomNum % freeListSize;
-  int counter = 0;
-   while(location != counter){ // find the one previous to location
+ // int counter = 0;
+   while(location != 0){ // find the one previous to location
        p = r;
-       r = r->next;
-       counter ++;
+       r = r->next; 
+       location --;
+      // counter ++;
     }
 
 
@@ -88,24 +89,14 @@ kalloc(void)
   }
 
   if(p == 0 ){
-    
-    r -> next = kmem.freelist;
-    count ++;
-    //delete the allocated from free list 
-    freeListSize --;
+   kmem.freelist = r -> next;   
    }else if(r ->next){
-    //allocatedframes[count] = (uint)r;
     p -> next = p ->next ->next;
-    count ++;
-    //delete the allocated from free list 
-    freeListSize --;
    }else{
-   // allocatedframes[count] = (uint)r;
     p -> next = 0;
-    count ++;
-    //delete the allocated from free list 
-    freeListSize --;
    }
+   count ++;
+   freeListSize --;//delete the allocated from free list 
   release(&kmem.lock);
   return (char*)r;
 }
